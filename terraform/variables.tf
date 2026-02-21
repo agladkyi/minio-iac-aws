@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "Регион AWS для развертывания"
   type        = string
-  default     = "us-east-1"  # Установи здесь тот регион, где твой ключ
+  default     = "eu-west-3"  # Установи здесь тот регион, где твой ключ
 }
 
 variable "instance_type" {
@@ -12,7 +12,7 @@ variable "instance_type" {
 variable "availability_zone" {
   description = "Зона доступности для инстанса"
   type        = string
-  default     = "us-east-1a"  # Установи здесь ту же зону, что и у твоего ключа
+  default     = "eu-west-3a"  # Установи здесь ту же зону, что и у твоего ключа
 }
 variable "key_name" {
   description = "Имя SSH ключа, созданного в AWS"
