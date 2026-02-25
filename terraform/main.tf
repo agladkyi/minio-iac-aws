@@ -27,6 +27,6 @@ output "instance_public_ip" {
   value = aws_instance.minio_server.public_ip
 }
 
-terraform {
-  backend "s3" {}
-}
+# terraform {
+#   backend "s3" {}      Расскомментируйте эти строки, если хотите использовать удалённое хранилище для состояния Terraform
+# }
