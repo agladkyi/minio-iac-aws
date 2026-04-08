@@ -1,37 +1,135 @@
-# DevOps Project 01: MinIO on AWS (IaC)
+# DevOps Project: MinIO S3 on AWS (Infrastructure as Code)
 
-## RU: Описание
-Цель: развернуть MinIO как production like сервис на AWS EC2 с помощью Terraform и Ansible, обеспечить HTTPS доступ, health checks, логи, алерты и базовый runbook.
+## Overview
 
-Open source app: https://github.com/minio/minio
+This project demonstrates a production-like deployment of a MinIO S3-compatible object storage service on AWS.
 
-## EN: Description
-Goal: deploy MinIO as a production like service on AWS EC2 using Terraform and Ansible, expose it via HTTPS, and implement health checks, logging, alerts, and a basic runbook.
+The infrastructure is fully provisioned using Terraform and configured with Ansible, ensuring idempotency, reproducibility, and automation.
 
-Open source app: https://github.com/minio/minio
+The system includes secure HTTPS access, basic monitoring, and operational tooling.
 
-## Scope
-- Terraform: VPC, subnets, security groups, EC2, IAM, S3 remote state
-- Ansible: hardening, installation, systemd service, configuration
-- HTTPS via Nginx or ALB + ACM
-- CloudWatch logs and basic alarms
-- Documentation and demo
+Designed to simulate real-world DevOps workflows and infrastructure practices.
 
-## Deliverables
-- Working infrastructure provisioned via Terraform
-- Application installed and managed as a service
-- README with steps: deploy, verify, troubleshoot, destroy
-- Architecture diagram
-- Demo (live or recorded)
+---
 
-## Acceptance Criteria
-- `terraform apply` and `terraform destroy` are fully reproducible
-- MinIO reachable via HTTPS
-- Health endpoints are working
-- Logs and alarms are configured
-- Runbook exists and is usable
+## Architecture
 
-## Repository Structure
-- terraform/
-- ansible/
-- docs/
+The solution consists of the following components:
+
+- **Terraform**
+  - VPC, subnets, security groups
+  - EC2 instance
+  - IAM roles and policies
+  - Remote state (S3)
+
+- **Ansible**
+  - System provisioning and hardening
+  - MinIO installation and configuration
+  - Systemd service setup
+
+- **Nginx / AWS ALB**
+  - HTTPS exposure
+  - SSL via ACM (if ALB used)
+
+- **MinIO**
+  - S3-compatible object storage service
+
+- **CloudWatch**
+  - Logs collection
+  - Basic monitoring and alerts
+
+---
+
+## Features
+
+- Fully reproducible infrastructure (Terraform)
+- Idempotent configuration management (Ansible)
+- Secure HTTPS access to the service
+- Basic logging and monitoring
+- Structured project with clear separation of concerns
+- Runbook for deployment and troubleshooting
+
+---
+
+## Deployment
+
+### Prerequisites
+
+- AWS account
+- Terraform
+- Ansible
+- SSH access
+
+### Steps
+
+1. Provision infrastructure:
+```bash
+terraform init
+terraform apply
+```
+2. Configure the server:
+```bash
+ansible-playbook playbook.yml
+```
+3. Access MinIo via HTTPS
+
+---
+
+### Validation
+
+- Infrastructure can be created and destroyed using Terraform
+- MinIO is accessible via HTTPS
+- Health checks are working
+- Logs are collected in CloudWatch
+- Configuration is reproducible and idempotent
+
+---
+
+### Repository Structure
+
+```bash
+terraform/   # Infrastructure as Code
+ansible/     # Configuration management
+docs/        # Documentation (optional)
+```
+--- 
+
+### Tech Stack
+
+- AWS (EC2, S3, IAM, CloudWatch)
+- Terraform
+- Ansible
+- Nginx / ALB
+- MinIo
+- Linux
+
+---
+
+### Documentation
+
+- Terraform setup: ./terraform/README.md
+- Ansible setup: ./ansible/README.md
+
+---
+
+### Demo
+
+### Terraform apply
+Infrastructure provisioning using Terraform
+
+![Terraform](docs/images/terraform.png)
+
+### Ansible apply
+
+![Ansible](docs/images/ansible.png)
+
+### MinIO Service
+Running S3-compatible object storage on AWS EC2
+
+![MinIO UI](docs/images/minio.png)
+
+### Notes
+
+This project was built as part of hands-on DevOps practice, focusing on real-world infrastructure patterns and automation principles.
+
+Based on: https://github.com/minio/minio
