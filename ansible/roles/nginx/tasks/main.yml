@@ -1,0 +1,54 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure nginx is enabled
+  systemd:
+    name: nginx
+    enabled: true
+    state: started
+
+- name: Allow HTTP in UFW
+  ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+  when: ansible_facts.os_family == "Debian"
+
+- name: Deploy Minio API nginx config
+  template:
+    src: minio-api.conf.j2
+    dest: "{{ nginx_sites_available_dir }}/minio-api.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Deploy MinIo Console nginx congig
+  template:
+    src: minio-console.conf.j2
+    dest: "{{ nginx_sites_available_dir }}/minio-console.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Remove default nginx site
+  file:
+  path: "{{ nginx_sites_enabled_dir }}/default"
+  state: absent
+  notify: Reload nginx
+
+- name: Validate nginx config
+  command: nginx -t
+  changed_when: false
+
+- name: Flush handlers
+  meta: flush_handlers

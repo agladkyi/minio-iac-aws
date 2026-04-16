@@ -1,0 +1,7 @@
+---
+- name: Configure Nginx reverse proxy for Minio
+  hosts: all
+  become: true
+
+  roles:
+    - nginx
