@@ -42,8 +42,8 @@
 
 - name: Remove default nginx site
   file:
-  path: "{{ nginx_sites_enabled_dir }}/default"
-  state: absent
+    path: "{{ nginx_sites_enabled_dir }}/default"
+    state: absent
   notify: Reload nginx
 
 - name: Validate nginx config
@@ -52,3 +52,17 @@
 
 - name: Flush handlers
   meta: flush_handlers
+
+- name: Enable MinIO API nginx config
+  file:
+    src: "{{ nginx_sites_available_dir }}/minio-api.conf"
+    dest: "{{ nginx_sites_enabled_dir }}/minio-api.conf"
+    state: link
+  notify: Reload nginx
+
+- name: Enable MinIO Console nginx config
+  file:
+    src: "{{ nginx_sites_available_dir }}/minio-console.conf"
+    dest: "{{ nginx_sites_enabled_dir }}/minio-console.conf"
+    state: link
+  notify: Reload nginx
