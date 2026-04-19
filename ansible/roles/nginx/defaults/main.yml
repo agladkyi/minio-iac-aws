@@ -1,0 +1,14 @@
+---
+nginx_sites_enabled_dir: /etc/nginx/sites-enabled
+nginx_sites_available_dir: /etc/nginx/sites-available
+
+minio_api_domain: s3.example.com
+minio_console_domain: console.example.com
+
+minio_api_backend_host: 127.0.0.1
+minio_api_backend_port: 9000
+
+minio_console_backend_host: 127.0.0.1
+minio_console_backend_port: 9001
+
+nginx_client_max_body_size: 0
