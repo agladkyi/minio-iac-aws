@@ -12,31 +12,67 @@ Designed to simulate real-world DevOps workflows and infrastructure practices.
 
 ---
 
-## Architecture
+## Architecture Diagram (logical)
 
+```md
+# Logical Flow
+
+Client → Nginx (80) → MinIO (9000 / 9001)
+
+Routing:
+
+- s3.<domain> → MinIO API
+
+- console.<domain> → MinIO Console
+``` 
 The solution consists of the following components:
 
-- **Terraform**
+- ### Terraform
   - VPC, subnets, security groups
   - EC2 instance
   - IAM roles and policies
   - Remote state (S3)
 
-- **Ansible**
+- ### Ansible
   - System provisioning and hardening
   - MinIO installation and configuration
   - Systemd service setup
 
-- **Nginx / AWS ALB**
+- ### Nginx / AWS ALB
   - HTTPS exposure
   - SSL via ACM (if ALB used)
 
-- **MinIO**
+- ### MinIO
   - S3-compatible object storage service
 
-- **CloudWatch**
+- ### CloudWatch
   - Logs collection
   - Basic monitoring and alerts
+
+### Nginx Reverse Proxy (Ingress Layer)
+
+Nginx is used as a reverse proxy to expose MinIO services over HTTP.
+
+Instead of accessing MinIO directly via ports:
+
+- `:9000` (API)
+- `:9001` (Console)
+
+All traffic is routed through Nginx:
+
+Client → Nginx (port 80) → MinIO backend
+
+Routing is based on domain name:
+
+- `s3.<domain>` → MinIO API
+- `console.<domain>` → MinIO Console
+
+This design provides:
+
+- Clean URLs (no ports)
+- Centralized access point
+- Foundation for HTTPS (TLS termination)
+- Ability to restrict direct access to backend services
 
 ---
 
@@ -44,7 +80,8 @@ The solution consists of the following components:
 
 - Fully reproducible infrastructure (Terraform)
 - Idempotent configuration management (Ansible)
-- Secure HTTPS access to the service
+- HTTP exposure via Nginx reverse proxy
+- HTTPS support (planned via Let's Encrypt)
 - Basic logging and monitoring
 - Structured project with clear separation of concerns
 - Runbook for deployment and troubleshooting
@@ -52,6 +89,28 @@ The solution consists of the following components:
 ---
 
 ## Deployment
+
+The infrastructure is deployed in two stages:
+
+1. ### Base Setup (Ansible)
+
+   - Prepares the EC2 instance
+
+   - Installs and configures MinIO
+
+   - Opens required ports (9000, 9001)
+
+2. ### HTTP Exposure (Nginx)
+
+   - Installs and configures Nginx as a reverse proxy
+
+   - Routes traffic based on domain:
+
+     - `s3.<domain>` → MinIO API (port 9000)
+
+     - `console.<domain>` → MinIO Console (port 9001)
+
+This separation allows independent and idempotent configuration of the application and its public exposure layer.
 
 ### Prerequisites
 
@@ -69,9 +128,12 @@ terraform apply
 ```
 2. Configure the server:
 ```bash
-ansible-playbook playbook.yml
+ansible-playbook -i inventory.ini playbooks/base_setup.yml
 ```
-3. Access MinIo via HTTPS
+3. Expose service via Nginx:
+```bash
+ansible-playbook -i inventory.ini playbooks/https_exposure.yml
+```
 
 ---
 
@@ -126,7 +188,37 @@ Infrastructure provisioning using Terraform
 ### MinIO Service
 Running S3-compatible object storage on AWS EC2
 
+### Accessing the Service
+
+Once deployed, the service can be accessed via:
+
+- MinIO API:
+  http://s3.<domain>
+
+- MinIO Console:
+  http://console.<domain>
+
+For local testing without DNS:
+
+```
+curl -H "Host: s3.<domain>" http://<EC2_PUBLIC_IP>
+curl -H "Host: console.<domain>" http://<EC2_PUBLIC_IP>
+```
+
 ![MinIO UI](docs/images/minio.png)
+
+### Security Notes
+
+Currently, MinIO services are exposed over HTTP via Nginx.
+
+Direct access to backend ports (9000, 9001) is temporarily allowed for testing purposes.
+
+Planned improvements:
+
+- Enable HTTPS using Let's Encrypt (Certbot)
+- Enforce HTTP → HTTPS redirection
+- Restrict direct access to backend ports (9000, 9001)
+- Expose only ports 80 and 443 publicly
 
 ### Notes
 
