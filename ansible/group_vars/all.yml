@@ -16,8 +16,26 @@ ssh_password_authentication: "no"
 # === Firewall ===
 firewall_allowed_ports:
   - "22"    # SSH
-  - "9000"  # MinIO API
-  - "9001"  # MinIO Console
+  - "80"    # HTTP
+  - "443"   # HTTPS
+  - "9000"  # MinIO API - temporary
+  - "9001"  # MinIO Console - temporary
 
-# === Time sync (Task #18) ===
+# === Nginx / MinIO exposure ===
+minio_api_domain: your-domain.com # Domain for MinIo API
+minio_console_domain: console.your-domain.com # Domain for MinIo Console
+
+minio_api_backend_host: 127.0.0.1
+minio_api_backend_port: 9000
+
+minio_console_backend_host: 127.0.0.1
+minio_console_backend_port: 9001
+
+nginx_client_max_body_size: 0
+
+# === Certbot / Let's Encrypt ===
+letsencrypt_email: your@email.com # Email for Let's Encrypt notifications
+certbot_webroot_path: /var/www/certbot
+
+# === Time sync ===
 ntp_timezone: "UTC"

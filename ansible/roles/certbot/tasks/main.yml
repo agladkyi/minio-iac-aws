@@ -1,0 +1,29 @@
+---
+- name: Install certbot
+  apt:
+    name: certbot
+    state: present
+    update_cache: true
+
+- name: Ensure certbot webroot exists
+  file:
+    path: "{{ certbot_webroot_path }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot certonly
+    --webroot
+    -w {{ certbot_webroot_path }}
+    --email {{ letsencrypt_email }}
+    --agree-tos
+    --non-interactive
+    --expand
+    {% for domain in certbot_domains %}
+    -d {{ domain }}
+    {% endfor %}
+  args:
+    creates: "/etc/letsencrypt/live/{{ minio_api_domain }}/fullchain.pem"

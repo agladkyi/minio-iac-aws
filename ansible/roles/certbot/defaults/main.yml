@@ -1,0 +1,7 @@
+---
+letsencrypt_email: your@email.com # Email for Let's Encrypt notifications
+certbot_webroot_path: /var/www/certbot
+
+certbot_domains:
+  - "{{ minio_api_domain }}"
+  - "{{ minio_console_domain }}"
